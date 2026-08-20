@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RLT Aufnahme">
+<meta name="theme-color" content="#002060">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEwMCIgZmlsbD0iIzAwMjA2MCIvPjx0ZXh0IHg9IjI1NiIgeT0iMjEwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTMwIiBmb250LXdlaWdodD0iNzAwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UkxUPC90ZXh0Pjx0ZXh0IHg9IjI1NiIgeT0iMzIwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iNTgiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC44KSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QXVmbmFobWU8L3RleHQ+PHRleHQgeD0iMjU2IiB5PSI0MDAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI0NCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjUpIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5BaXIgZm9yIEFsbDwvdGV4dD48L3N2Zz4=">
+<title>RLT-Datenaufnahme · Bestandserfassung</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+:root{--brand:#002060;--bl:#E6EAF3;--blue:#185FA5;--or:#EF9F27;--orl:#FAEEDA;--red:#E24B4A;--rdl:#FCEBEB;--grn:#107C41;--grnl:#E3F1E9;--bdr:#E2E0D8;--bg:#F5F4EF;--bg2:#ECEAE3;--card:#fff;--tx:#1A1916;--tx2:#6B6860;--tx3:#9B9A96;--r:12px;--rs:8px;--f:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#1C1C1E;--bg2:#2C2C2E;--card:#3A3A3C;--bdr:#48484A;--tx:#F2F2F7;--tx2:#AEAEB2;--tx3:#636366;--bl:#0A1A3D;--orl:#3D2A0D;--rdl:#3D0D0D;--grnl:#0D2A18}}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;height:100dvh;overflow:hidden}
+body{font-family:var(--f);background:var(--bg);color:var(--tx);display:flex;flex-direction:column;position:fixed;width:100%;top:0;left:0}
+#app{display:flex;flex-direction:column;height:100dvh;overflow:hidden}
+.topbar{background:var(--card);border-bottom:.5px solid var(--bdr);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-title{font-size:15px;font-weight:600;color:var(--tx)}.topbar-sub{font-size:11px;color:var(--tx2);margin-top:1px}
+.lang-switch{display:flex;border:.5px solid var(--bdr);border-radius:var(--rs);overflow:hidden}
+.lang-btn{padding:6px 10px;font-size:12px;font-weight:600;background:var(--card);color:var(--tx2);border:none;cursor:pointer;font-family:var(--f)}
+.lang-btn.lang-active{background:var(--brand);color:#fff}
+.btn-pdf{padding:7px 13px;background:var(--brand);color:#fff;border:none;border-radius:var(--rs);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--f)}
+.pbar{height:3px;background:var(--bdr);flex-shrink:0}
+.pfill{height:100%;background:var(--brand);width:0;transition:width .3s}
+.tabs{display:flex;overflow-x:auto;background:var(--card);border-bottom:.5px solid var(--bdr);flex-shrink:0;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:10px 11px;font-size:12px;color:var(--tx2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0;user-select:none}
+.tab.active{color:var(--brand);border-bottom-color:var(--brand);font-weight:600}
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.content{padding:10px 14px;display:flex;flex-direction:column;gap:10px}
+.hidden{display:none!important}
+.card{background:var(--card);border:.5px solid var(--bdr);border-radius:var(--r);overflow:hidden}
+.sec-hdr{padding:9px 14px;display:flex;align-items:center;gap:8px;border-bottom:.5px solid var(--bdr);background:var(--bg2)}
+.sec-hdr i{font-size:15px;color:var(--brand)}.sec-title{font-size:13px;font-weight:500;color:var(--tx)}
+.present-toggle{margin-left:auto;display:flex;gap:3px;flex-shrink:0}
+.pt-btn{padding:4px 11px;font-size:11px;border:.5px solid var(--bdr);border-radius:999px;background:var(--card);color:var(--tx2);cursor:pointer;font-family:var(--f)}
+.pt-btn.on-ja{background:var(--bl);border-color:#3366AA;color:var(--brand);font-weight:600}
+.pt-btn.on-nein{background:var(--bg2);border-color:var(--bdr);color:var(--tx2);font-weight:600}
+.comp-body{padding:11px 14px}
+.comp-body.off{opacity:.32;pointer-events:none}
+.comp-absent{padding:11px 14px;font-size:12px;color:var(--tx2);font-style:italic;display:none}
+.comp-absent.vis{display:block}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ff{display:flex;flex-direction:column;gap:4px}
+.ff.full{grid-column:1 / -1}
+.ff label{font-size:11px;color:var(--tx2)}
+.ff input,.ff select,.ff textarea{padding:7px 9px;font-size:13px;border:.5px solid var(--bdr);border-radius:var(--rs);background:var(--card);color:var(--tx);font-family:var(--f);width:100%;min-height:34px}
+.ff textarea{min-height:60px;resize:vertical}
+.ff .unitwrap{display:flex;align-items:center;gap:5px}
+.ff .unitwrap input{flex:1}
+.ff .unitwrap span{font-size:12px;color:var(--tx2);white-space:nowrap}
+.photo-bar{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;align-items:flex-end}
+.photo-thumbs{display:flex;flex-wrap:wrap;gap:7px}
+.pthumb-wrap{position:relative}
+.pthumb{width:70px;height:70px;object-fit:cover;border-radius:var(--rs);border:.5px solid var(--bdr);cursor:pointer;display:block}
+.pdel{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.photo-add-btn{width:70px;height:70px;border:1.5px dashed var(--bdr);border-radius:var(--rs);background:var(--bg2);color:var(--tx2);font-size:11px;cursor:pointer;font-family:var(--f);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex-shrink:0}
+.photo-add-btn input{display:none}.photo-add-btn i{font-size:22px;color:var(--brand);pointer-events:none}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;display:flex;align-items:center;justify-content:center}
+.lightbox img{max-width:94vw;max-height:88vh;border-radius:var(--rs)}
+.lightbox-close{position:fixed;top:18px;right:18px;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;border:none;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.hint{font-size:12px;color:var(--tx2);line-height:1.6;padding:0 2px 4px}
+.preset-row{display:flex;flex-wrap:wrap;gap:8px}
+.preset-btn{flex:1;min-width:130px;padding:11px 10px;background:var(--bl);color:var(--brand);border:.5px solid #3366AA;border-radius:var(--rs);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--f);display:flex;align-items:center;justify-content:center;gap:6px;text-align:center}
+.act-btn{padding:11px;border:none;border-radius:var(--rs);font-size:14px;font-weight:500;cursor:pointer;font-family:var(--f);text-align:center;display:block;width:100%}
+.tpl-status{font-size:12px;color:var(--brand);display:none;padding:8px 10px;background:var(--bl);border-radius:var(--rs);margin-top:4px}
+.tech-row{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:.5px solid var(--bdr)}.tech-row:last-child{border-bottom:none}
+.tech-num{font-size:11px;color:var(--tx2);min-width:24px}
+.tech-input{flex:1;padding:6px 9px;font-size:13px;border:.5px solid var(--bdr);border-radius:var(--rs);background:var(--card);color:var(--tx);font-family:var(--f)}
+.sig-wrap{padding:11px 14px}
+.sig-lrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.sig-name{font-size:13px;font-weight:500;color:var(--tx)}
+.sig-btn{padding:5px 11px;font-size:12px;border:.5px solid var(--bdr);border-radius:var(--rs);background:var(--bg2);color:var(--tx2);cursor:pointer;font-family:var(--f)}
+.sig-btn.done{background:var(--bl);border-color:#3366AA;color:var(--brand);font-weight:500}
+.sig-canvas{width:100%;height:110px;border:1px dashed var(--bdr);border-radius:var(--rs);cursor:crosshair;touch-action:none;display:block;background:var(--bg)}
+.sig-canvas.signed{border-style:solid;border-color:#3366AA;background:var(--card)}
+.sig-hint{font-size:11px;color:var(--tx3);margin-top:4px;text-align:center}
+.fbar{background:var(--card);border-top:.5px solid var(--bdr);padding:11px 14px;display:flex;gap:8px;align-items:center;flex-shrink:0}
+.btn-back{padding:11px 14px;background:var(--bg2);color:var(--tx);border:.5px solid var(--bdr);border-radius:var(--rs);font-size:15px;cursor:pointer;font-family:var(--f);min-height:44px}
+.btn-next{flex:1;padding:11px;background:var(--brand);color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:500;cursor:pointer;font-family:var(--f);min-height:44px}
+.btn-pfoo{padding:11px 14px;background:var(--blue);color:#fff;border:none;border-radius:var(--rs);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--f);min-height:44px}
+.toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:7px 16px;border-radius:var(--rs);font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;z-index:100}
+.toast.show{opacity:1}
+.pov{position:fixed;inset:0;background:var(--bg);z-index:50;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.ptopbar{background:var(--card);border-bottom:.5px solid var(--bdr);padding:11px 14px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.ptopbar-title{font-size:15px;font-weight:500;color:var(--tx)}.ptopbar-sub{font-size:12px;color:var(--tx2);margin-top:2px}
+.btn-print{padding:8px 15px;background:var(--brand);color:#fff;border:none;border-radius:var(--rs);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--f)}
+.btn-cpdf{padding:8px 12px;background:var(--bg2);color:var(--tx);border:.5px solid var(--bdr);border-radius:var(--rs);font-size:14px;cursor:pointer;font-family:var(--f)}
+.pdoc{background:#fff;border:.5px solid #ddd;border-radius:var(--r);overflow:hidden;font-family:Arial,sans-serif;font-size:11px;color:#222;line-height:1.5}
+.pco-hdr{display:flex;justify-content:space-between;align-items:center;background:#002060;padding:14px 18px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pco-logo{height:68px;max-width:260px;object-fit:contain}.pco-right{text-align:right}
+.pdoc-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:2px}.pnorm{font-size:10px;color:rgba(255,255,255,.75)}
+.pco-info{font-size:10px;color:rgba(255,255,255,.85);line-height:1.7;margin-top:3px}
+.pbody{padding:16px 18px}
+.pparties{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.pparty{background:#f5f5f5;border-radius:4px;padding:7px 9px}
+.pparty-title{font-size:9px;color:#999;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.pparty-val{font-size:12px;font-weight:700;color:#000;line-height:1.5}
+.pmeta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.pbox{background:#f5f5f5;border-radius:4px;padding:6px 8px}
+.pbox-k{font-size:9px;color:#999;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}.pbox-v{font-size:11px;font-weight:600;color:#222}
+.psec{font-size:10px;font-weight:700;color:#002060;text-transform:uppercase;letter-spacing:.06em;margin:12px 0 5px;border-bottom:.5px solid #ccc;padding-bottom:3px}
+.ptbl{width:100%;border-collapse:collapse;font-size:10px;margin-bottom:4px}
+.ptbl th{background:#EEF1F8;color:#002060;padding:4px 7px;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #ddd;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.ptbl td{padding:4px 7px;border-bottom:.5px solid #eee;vertical-align:top}
+.ptbl td.k{width:38%;color:#555;font-weight:600}
+.pcomp{font-size:11px;font-weight:700;color:#111;margin:9px 0 3px;display:flex;align-items:center;gap:6px}
+.pchip{display:inline-block;padding:1px 7px;border-radius:10px;font-size:8px;font-weight:700}
+.pchip.ja{background:#E6EAF3;color:#002060}.pchip.nein{background:#f0f0f0;color:#999}
+.pnote{background:#f9f9f9;border:.5px solid #eee;border-radius:4px;padding:5px 7px;font-size:9px;color:#555;margin:2px 0 6px}
+.pfoot{margin-top:12px;border-top:.5px solid #eee;padding-top:6px;font-size:9px;color:#bbb;display:flex;justify-content:space-between}
+</style>
+</head>
+<body>
+<div id="splash" style="position:fixed;inset:0;background:#002060;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .5s">
+  <img id="splash-logo" style="height:80px;max-width:260px;object-fit:contain" alt="Logo">
+  <div style="font-family:-apple-system,sans-serif;font-size:14px;color:rgba(255,255,255,.6);letter-spacing:.04em">RLT-Datenaufnahme · Bestandserfassung</div>
+  <div style="width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);animation:pulse 1.2s ease-in-out infinite"></div>
+</div>
+<style>@keyframes pulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}</style>
+<div id="app">
+  <div class="topbar">
+    <div><div class="topbar-title" id="tb-title">Datenaufnahme Lüftungsanlage</div><div class="topbar-sub" id="tb-sub">Bestandserfassung RLT / Ablüfter</div></div>
+    <div style="display:flex;align-items:center;gap:8px"><div class="lang-switch"><button id="lang-de" class="lang-btn lang-active" onclick="setLang('de')">DE</button><button id="lang-it" class="lang-btn" onclick="setLang('it')">IT</button></div><button class="btn-pdf" onclick="showPdf()">PDF ↗</button></div>
+  </div>
+  <div class="pbar"><div class="pfill" id="pfill"></div></div>
+  <div class="tabs" id="tabbar"></div>
+  <div class="scroll"><div id="form"></div></div>
+  <div class="fbar">
+    <button class="btn-back" onclick="prevTab()">←</button>
+    <button class="btn-next" onclick="nextTab()" id="next-btn">Weiter →</button>
+    <button class="btn-pfoo" onclick="showPdf()">PDF ↗</button>
+  </div>
+</div>
+<div id="pov" class="pov hidden">
+  <div class="ptopbar">
+    <div><div class="ptopbar-title" id="pv-title">PDF-Vorschau</div><div class="ptopbar-sub" id="pv-sub">Drucken → Als PDF sichern</div></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-print" id="pv-print" onclick="doPrint()">🖨 Drucken / PDF</button>
+      <button class="btn-cpdf" onclick="closePdf()">✕</button>
+    </div>
+  </div>
+  <div style="padding:12px 14px"><div id="pdoc" class="pdoc"></div></div>
+</div>
+<div class="toast" id="toast">Gespeichert</div>
+<div id="anlagen-picker" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:600;display:flex;align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--bg);border-radius:var(--r);max-width:440px;width:100%;max-height:80vh;display:flex;flex-direction:column;overflow:hidden">
+    <div style="padding:14px 16px;border-bottom:.5px solid var(--bdr);display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:15px;font-weight:600;color:var(--tx)" id="picker-title">Aufnahme auswählen</div>
+      <button onclick="document.getElementById('anlagen-picker').classList.add('hidden')" style="width:30px;height:30px;border-radius:50%;background:var(--bg2);border:none;font-size:16px;cursor:pointer;color:var(--tx2)">✕</button>
+    </div>
+    <div id="anlagen-picker-list" style="padding:14px 16px;overflow-y:auto"></div>
+  </div>
+</div>
+<script>
+const LOGO_DATA="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iQVBMX0hDVSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCA3OTMuNyAxODQuMyI+CiAgPGRlZnM+CiAgICA8c3R5bGU+CiAgICAgIC5jbHMtMSB7CiAgICAgICAgZmlsbDogI2U3MzgzODsKICAgICAgfQoKICAgICAgLmNscy0xLCAuY2xzLTIgewogICAgICAgIHN0cm9rZS13aWR0aDogMHB4OwogICAgICB9CgogICAgICAuY2xzLTIgewogICAgICAgIGZpbGw6ICNmZmY7CiAgICAgIH0KICAgIDwvc3R5bGU+CiAgPC9kZWZzPgogIDxnPgogICAgPHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMzU0LjMsMTcwLjhoLS4ybC0xMC45LTMwLjQtMTAuOSwzMC40aC0uMmwtMTUuOC00MS44aDQuN2wxMS4xLDMwLjUsMTEtMzAuNWguMmwxMSwzMC41LDExLjEtMzAuNWg0LjhsLTE1LjgsNDEuOFoiLz4KICAgIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTQxNC40LDE0OS42YzAsMTIuMy04LjcsMjEuMy0yMC42LDIxLjNzLTIwLjUtOS0yMC41LTIxLjMsOC42LTIxLjMsMjAuNS0yMS4zLDIwLjYsOS4xLDIwLjYsMjEuM1pNMzc3LjYsMTQ5LjZjMCwxMCw2LjgsMTcuMywxNi4yLDE3LjNzMTYuMi03LjMsMTYuMi0xNy4zLTYuOC0xNy40LTE2LjItMTcuNC0xNi4yLDcuMy0xNi4yLDE3LjRaIi8+CiAgICA8cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik00MjcuMSwxNjYuM2gyMC42djMuOWgtMjQuOXYtNDEuMmg0LjN2MzcuM1oiLz4KICAgIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTQ3OC43LDEzMi45aC0xOS44djE1aDE2Ljl2My45aC0xNi45djE4LjNoLTQuM3YtNDEuMmgyNHY0WiIvPgogICAgPHBhdGggY2xhc3M9ImNscy0yIiBkPSJNNTA5LjgsMTMyLjloLTE5Ljh2MTVoMTYuOXYzLjloLTE2Ljl2MTguM2gtNC4zdi00MS4yaDI0djRaIi8+CiAgICA8cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik01NDEuOCwxMzIuOWgtMjAuNnYxNC40aDE4LjJ2My45aC0xOC4ydjE1aDIxLjF2NGgtMjUuM3YtNDEuMmgyNC45djRaIi8+CiAgICA8cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik01NzMuNywxNzAuMWwtMTAuMS0xNi4yYy0uNCwwLS44LDAtMS4yLDBoLTguMXYxNi4yaC00LjN2LTQxLjJoMTIuNGM4LjMsMCwxNC40LDQuNCwxNC40LDEyLjVzLTMuNSwxMC4xLTguOCwxMS43bDEwLjcsMTdoLTVaTTU3Mi41LDE0MS40YzAtNS43LTQuMS04LjctMTAuNS04LjdoLTcuOHYxNy4zaDcuOGM2LjQsMCwxMC41LTIuOSwxMC41LTguNloiLz4KICAgIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTYxNS42LDEzMi44aC0xNXYzNy4zaC00LjN2LTM3LjNoLTE1di0zLjloMzQuMnYzLjlaIi8+CiAgICA8cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik02NDYuOSwxMzIuN2wtMi4xLDMuNmMtMi45LTIuMy02LjgtNC4xLTExLjEtNC4xcy04LjgsMi4zLTguOCw3LjQsMi41LDUuOSw5LjksNy42YzkuNywyLjEsMTMuNiw1LjIsMTMuNiwxMS41cy01LjUsMTIuMi0xNC4yLDEyLjItMTAuOS0xLjktMTQuNi01LjJsMi40LTMuNWMzLDIuOSw3LjcsNC44LDEyLjMsNC44czkuOS0yLjcsOS45LTcuOS0zLjEtNi4zLTEwLjUtNy45Yy05LjctMi4xLTEyLjktNS4xLTEyLjktMTEuM3M1LjQtMTEuNiwxMy4xLTExLjYsOS45LDEuOSwxMy4yLDQuNFoiLz4KICA8L2c+CiAgPGc+CiAgICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik02NS43LDEyOWgtMTcuNXY0MS4xaDguM3YtMTIuN2g4LjNjOS45LDAsMTYuMy01LjYsMTYuMy0xNC4ycy02LTE0LjItMTUuNS0xNC4yTTY1LjEsMTUwLjNoLTguNnYtMTQuM2g4LjRjNS4xLDAsOC4yLDIuNyw4LjIsNy4xcy0zLjIsNy4yLTguMSw3LjJNODguNiwxNzBoMjkuNHYtNy41aC0yMXYtMzMuNmgtOC40djQxLjFaTTEyNS4yLDE3MGgzMS4zdi03LjVoLTIzdi05LjZoMTkuNXYtNy4zaC0xOS41di05LjRoMjIuN3YtNy40aC0zMXY0MS4xWk0xODQuMSwxNzAuOGMxMi4yLDAsMjEuNC05LjEsMjEuNC0yMS4zcy04LjktMjEuMy0yMS40LTIxLjMtMjEuNCw5LjEtMjEuNCwyMS4zLDguOSwyMS4zLDIxLjQsMjEuM00xODQuMSwxNjMuM2MtNy40LDAtMTMuMS02LTEzLjEtMTMuOXM1LjctMTMuOSwxMy4xLTEzLjksMTMuMSw2LDEzLjEsMTMuOS01LjYsMTMuOS0xMy4xLDEzLjkiLz4KICAgIDxwb2x5Z29uIGNsYXNzPSJjbHMtMSIgcG9pbnRzPSIyNDguMiAxNzAgMjQ5LjkgMTcwIDI0OS45IDEyOSAyNDEuNiAxMjkgMjQxLjYgMTUzLjMgMjE0LjUgMTI4LjcgMjEyLjcgMTI4LjcgMjEyLjcgMTcwIDIyMSAxNzAgMjIxIDE0NS42IDI0OC4yIDE3MCIvPgogICAgPHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMjg4LjgsMTcwaDkuM2wtMjEtNDEuNGgtMS43bC0yMC44LDQxLjRoOS4ybDIuOS02LjNoMTkuMmwyLjksNi4zWk0yNzYuMSwxNDMuMWw2LjgsMTMuOGgtMTMuM2w2LjUtMTMuOFoiLz4KICAgIDxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTM0LjIsMTcwaDkuM2wtMjEtNDEuNGgtMS43TDAsMTcwaDkuMmwyLjktNi4zaDE5LjJsMi45LDYuM1pNMjEuNiwxNDMuMWw2LjgsMTMuOGgtMTMuM2w2LjUtMTMuOFoiLz4KICA8L2c+CiAgPHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMTAzLjIsODMuM1YxLjRoNi4xdjgxLjloLTYuMVoiLz4KICA8cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik0xOTYuMyw4My4zbC0yNi4xLTMzLjloLTI2Ljh2MzMuOWgtNi4xVjEuNGgzNC40YzE3LjcsMCwyOS4zLDkuNiwyOS4zLDIzLjN2LjJjMCwxMy43LTEwLjIsMjEuNS0yNCwyMy40bDI3LDM1aC03LjdaTTE5NC45LDI0LjljMC0xMS04LjctMTcuOS0yMy41LTE3LjloLTI4djM2LjloMjcuNmMxMy43LDAsMjMuOS02LjksMjMuOS0xOC43di0uMloiLz4KICA8cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik0yNjksN3YzMy42aDQ2LjN2NS42aC00Ni4zdjM3LjFoLTYuMVYxLjRoNTcuN3Y1LjZoLTUxLjZaIi8+CiAgPHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMzc3LjcsODQuN2MtMjQuOCwwLTQxLjEtMTkuOC00MS4xLTQyLjF2LS4yQzMzNi42LDIwLDM1My4xLDAsMzc3LjksMHM0MS4xLDE5LjgsNDEuMSw0Mi4xcS4xLjEsMCwuMmMwLDIyLjMtMTYuNSw0Mi40LTQxLjMsNDIuNFpNNDEyLjcsNDIuNGMwLTIwLjItMTQuNy0zNi45LTM1LTM2LjlzLTM0LjgsMTYuNC0zNC44LDM2LjZ2LjJjMCwyMC4yLDE0LjcsMzYuOSwzNSwzNi45czM0LjgtMTYuNCwzNC44LTM2LjZ2LS4yWiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTUwMS42LDgzLjNsLTI2LjEtMzMuOWgtMjYuOHYzMy45aC02LjFWMS40aDM0LjRjMTcuNywwLDI5LjMsOS42LDI5LjMsMjMuM3YuMmMwLDEzLjctMTAuMiwyMS41LTI0LDIzLjRsMjcsMzVoLTcuN1pNNTAwLjIsMjQuOWMwLTExLTguNy0xNy45LTIzLjUtMTcuOWgtMjh2MzYuOWgyNy42YzEzLjcsMCwyMy45LTYuOSwyMy45LTE4Ljd2LS4yWiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTY2My41LDgzLjNWMS40aDYuMXY3Ni4zaDQ4LjF2NS42aC01NC4yWiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTczOC44LDgzLjNWMS40aDYuMXY3Ni4zaDQ4LjF2NS42aC01NC4yWiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTc1LjQsODMuNWwtMTEtMjIuOUgxNy40bC0xMS4xLDIyLjlIMEw0MC4xLDFoMS45bDQwLjEsODIuNWgtNi43Wk00MC45LDExLjNsLTIwLjksNDMuOGg0MS44TDQwLjksMTEuM1oiLz4KICA8cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik02MzYuOSw4My41bC0xMS0yMi45aC00Ny4xbC0xMS4xLDIyLjloLTYuM0w2MDEuNSwxaDEuOWw0MC4xLDgyLjVoLTYuN1pNNjAyLjQsMTEuM2wtMjAuOSw0My44aDQxLjhsLTIwLjktNDMuOFoiLz4KPC9zdmc+";
+
+/* ============ i18n ============ */
+let lang='de';
+function L(x){return (x&&typeof x==='object'&&!Array.isArray(x))?(x[lang]!==undefined?x[lang]:x.de):x;}
+const UI={
+  title:{de:'Datenaufnahme Lüftungsanlage',it:'Rilevamento dati impianto di ventilazione'},
+  sub:{de:'Bestandserfassung RLT / Ablüfter',it:'Rilevamento RLT / estrattore'},
+  weiter:{de:'Weiter →',it:'Avanti →'},
+  pdfCreate:{de:'PDF erstellen →',it:'Crea PDF →'},
+  pdfPrev:{de:'PDF-Vorschau',it:'Anteprima PDF'},
+  pdfSub:{de:'Drucken → Als PDF sichern',it:'Stampa → Salva come PDF'},
+  print:{de:'🖨 Drucken / PDF',it:'🖨 Stampa / PDF'},
+  vorhanden:{de:'vorhanden',it:'presente'},
+  ja:{de:'Ja',it:'Sì'},nein:{de:'Nein',it:'No'},
+  nichtVorh:{de:'nicht vorhanden',it:'non presente'},
+  bem:{de:'Bemerkung',it:'Nota'},
+  foto:{de:'Foto',it:'Foto'},
+  keineAngabe:{de:'— keine Angabe —',it:'— nessun dato —'},
+  waehlen:{de:'— wählen —',it:'— scegliere —'},
+  saved:{de:'Gespeichert',it:'Salvato'},
+  pickTitle:{de:'Aufnahme auswählen',it:'Seleziona rilevamento'},
+  docTitle:{de:'Datenaufnahme Lüftungsanlage',it:'Rilevamento impianto di ventilazione'},
+  auftraggeber:{de:'Auftraggeber',it:'Committente'},
+  objekt:{de:'Objekt / Anlage',it:'Oggetto / Impianto'},
+  keineB:{de:'Keine Bemerkungen',it:'Nessuna nota'},
+  sigTitle:{de:'Aufgenommen durch',it:'Rilevato da'},
+  keineUnt:{de:'Keine Unterschrift',it:'Nessuna firma'},
+  erstellt:{de:'Erstellt',it:'Creato'}
+};
+function U(k){return L(UI[k]);}
+
+/* ============ shared field defs ============ */
+const OPT_JN=[{de:'Ja',it:'Sì'},{de:'Nein',it:'No'}];
+const F_FAB={k:'fab',l:{de:'Fabrikat / Hersteller',it:'Marca / Produttore'}};
+const F_TYP={k:'typ',l:{de:'Typ / Baureihe',it:'Tipo / Serie'}};
+const F_BJ={k:'bj',l:{de:'Baujahr',it:'Anno costr.'},t:'num'};
+const F_SN={k:'sn',l:{de:'Serien- / Fabrik-Nr.',it:'N. serie / matricola'}};
+function base(){return [F_FAB,F_TYP,F_BJ,F_SN];}
+
+const OG_FILT=[
+ {l:'ePM1',o:['ePM1 50%','ePM1 55%','ePM1 60%','ePM1 70%','ePM1 80%','ePM1 85%']},
+ {l:'ePM2,5',o:['ePM2,5 50%','ePM2,5 65%','ePM2,5 70%','ePM2,5 80%']},
+ {l:'ePM10',o:['ePM10 50%','ePM10 60%','ePM10 70%']},
+ {l:'ISO Coarse',o:['ISO Coarse 40%','ISO Coarse 50%','ISO Coarse 60%','ISO Coarse 70%']},
+ {l:'HEPA / ULPA',o:['HEPA H13','HEPA H14','ULPA U15']}
+];
+const O_FILTART=[{de:'Vorfilter',it:'Prefiltro'},{de:'Feinfilter',it:'Filtro fine'},{de:'Schwebstofffilter (HEPA)',it:'Filtro assoluto (HEPA)'},{de:'Aktivkohlefilter',it:'Filtro a carboni attivi'},{de:'Taschenfilter',it:'Filtro a tasche'},{de:'Kompaktfilter',it:'Filtro compatto'},{de:'Panelfilter',it:'Filtro a pannello'}];
+const O_VBAU=[{de:'Radial – freilaufend',it:'Radiale – a pale rovesce'},{de:'Radial – mit Gehäuse',it:'Radiale – con coclea'},{de:'Axial',it:'Assiale'},{de:'EC-Plugventilator',it:'Ventilatore EC plug'},{de:'Rohr-/Kanalventilator',it:'Ventilatore in linea'},{de:'Dachventilator',it:'Ventilatore da tetto'}];
+const O_ANTR=[{de:'Direktantrieb',it:'Trasmissione diretta'},{de:'Riemenantrieb',it:'Trasmissione a cinghia'}];
+const O_HMED=[{de:'PWW – Warmwasser',it:'Acqua calda'},{de:'Elektro',it:'Elettrico'},{de:'Dampf',it:'Vapore'},{de:'Gas',it:'Gas'},{de:'Wärmepumpe / DX',it:'Pompa di calore / DX'}];
+const O_KMED=[{de:'Kaltwasser (PKW)',it:'Acqua refrigerata'},{de:'Direktverdampfer (DX)',it:'Espansione diretta (DX)'}];
+const O_WRG=[{de:'Rotationswärmetauscher',it:'Scambiatore rotativo'},{de:'Kreuzstrom-Plattenwärmetauscher',it:'Scambiatore a piastre a flussi incrociati'},{de:'Gegenstrom-Plattenwärmetauscher',it:'Scambiatore a piastre controcorrente'},{de:'Kreislaufverbund (KVS)',it:'Recupero con circuito (KVS)'},{de:'Wärmerohr / Heat-Pipe',it:'Tubo di calore / heat-pipe'}];
+const O_KLBAU=[{de:'Jalousieklappe',it:'Serranda ad alette'},{de:'Dichtschließende Klappe',it:'Serranda a tenuta'},{de:'Volumenstromklappe',it:'Serranda di portata'}];
+const O_STELL=[{de:'Auf / Zu',it:'Aperto / Chiuso'},{de:'Stetig (0–10 V)',it:'Modulante (0–10 V)'},{de:'mit Federrücklauf',it:'con ritorno a molla'}];
+const O_ART=[{de:'Zentrale RLT-Anlage',it:'Impianto VMC centrale'},{de:'Zu-/Abluftgerät',it:'Gruppo mandata/ripresa'},{de:'Ablüfter / Abluftventilator',it:'Estrattore / ventilatore di ripresa'},{de:'Zuluftgerät',it:'Gruppo di mandata'},{de:'Dachventilator',it:'Ventilatore da tetto'},{de:'Wohnungslüftung',it:'Ventilazione residenziale'},{de:'Sonstige',it:'Altro'}];
+const O_AUFST=[{de:'Innenaufstellung',it:'Installazione interna'},{de:'Außen – Dach',it:'Esterna – tetto'},{de:'Außen – Fassade',it:'Esterna – facciata'},{de:'Technikzentrale',it:'Centrale tecnica'}];
+const O_BETR=[{de:'Dauerbetrieb',it:'Funzionamento continuo'},{de:'Zeitprogramm',it:'Programma orario'},{de:'Bedarf / Präsenz',it:'A richiesta / presenza'},{de:'Handbetrieb',it:'Manuale'}];
+const O_MAT=[{de:'verzinkt',it:'zincato'},{de:'Aluminium',it:'Alluminio'},{de:'Edelstahl',it:'Acciaio inox'},{de:'kunststoffbeschichtet',it:'rivestito plastica'},{de:'Sonstige',it:'Altro'}];
+const O_GBAU=[{de:'Rahmen-Paneel-Bauweise',it:'Struttura a telaio e pannelli'},{de:'Blockbauweise',it:'Struttura monoblocco'},{de:'Kompaktgerät',it:'Unità compatta'},{de:'Rohr-/Kanalgerät',it:'Unità in linea'},{de:'Sonstige',it:'Altro'}];
+const O_INT=[{de:'Halbjährlich',it:'Semestrale'},{de:'Jährlich',it:'Annuale'},{de:'Quartalsweise',it:'Trimestrale'},{de:'nach Bedarf',it:'a richiesta'}];
+
+/* ============ SCHEMA ============ */
+const SECTIONS=[
+ {id:'start',tab:{de:'Start',it:'Start'},type:'start'},
+
+ {id:'stamm',tab:{de:'Stammdaten',it:'Dati base'},type:'fields',groups:[
+   {t:{de:'Anlagenstammdaten',it:'Dati base impianto'},ic:'ti-clipboard-list',scope:'stamm',pid:'anlage',f:[
+     {k:'art',l:{de:'Anlagenart',it:'Tipo di impianto'},t:'sel',o:O_ART,w:'full'},
+     {k:'bez',l:{de:'Anlagenbezeichnung / Anlagen-Nr.',it:'Denominazione / n. impianto'}},
+     {k:'hersteller',l:{de:'Gerätehersteller',it:'Produttore apparecchio'}},
+     {k:'typ',l:{de:'Gerätetyp / Baureihe',it:'Tipo / serie apparecchio'}},
+     {k:'baujahr',l:{de:'Baujahr',it:'Anno di costruzione'},t:'num'},
+     {k:'sn',l:{de:'Serien- / Fabrik-Nr.',it:'N. serie / matricola'}},
+     {k:'standort',l:{de:'Standort / Aufstellraum',it:'Ubicazione / locale'}},
+     {k:'aufstellung',l:{de:'Aufstellung',it:'Installazione'},t:'sel',o:O_AUFST},
+     {k:'zuluft',l:{de:'Zuluft-Volumenstrom',it:'Portata mandata'},t:'num',u:'m³/h'},
+     {k:'abluft',l:{de:'Abluft-Volumenstrom',it:'Portata ripresa'},t:'num',u:'m³/h'},
+     {k:'pressung',l:{de:'Externe Pressung',it:'Prevalenza esterna'},t:'num',u:'Pa'},
+     {k:'betrieb',l:{de:'Betriebsweise',it:'Modo funzionamento'},t:'sel',o:O_BETR},
+     {k:'nutzung',l:{de:'Versorgungsbereich / Nutzung',it:'Zona servita / uso'},w:'full'},
+     {k:'aufnahme',l:{de:'Aufgenommen durch',it:'Rilevato da'}},
+     {k:'datum',l:{de:'Datum',it:'Data'}}
+   ]},
+   {t:{de:'Auftraggeber / Betreiber',it:'Committente / gestore'},ic:'ti-home',scope:'stamm__ag',f:[
+     {k:'name',l:{de:'Name / Firma',it:'Nome / Ditta'},w:'full'},
+     {k:'street',l:{de:'Straße & Hausnummer',it:'Via e civico'}},
+     {k:'city',l:{de:'PLZ & Ort',it:'CAP e città'}},
+     {k:'kontakt',l:{de:'Ansprechperson vor Ort',it:'Referente in loco'},w:'full'}
+   ]},
+   {t:{de:'Objekt',it:'Oggetto'},ic:'ti-map-pin',scope:'stamm__obj',f:[
+     {k:'name',l:{de:'Objektname',it:'Nome oggetto'},w:'full'},
+     {k:'street',l:{de:'Straße & Hausnummer',it:'Via e civico'}},
+     {k:'city',l:{de:'PLZ & Ort',it:'CAP e città'}}
+   ]}
+ ]},
+
+ {id:'gehaeuse',tab:{de:'Gehäuse',it:'Involucro'},type:'fields',groups:[
+   {t:{de:'Gehäuse & Aufbau',it:'Involucro e struttura'},ic:'ti-box',scope:'geh',pid:'gehaeuse',f:[
+     {k:'bauart',l:{de:'Gehäusebauart',it:'Tipo involucro'},t:'sel',o:O_GBAU,w:'full'},
+     {k:'material',l:{de:'Material',it:'Materiale'},t:'sel',o:O_MAT},
+     {k:'paneel',l:{de:'Paneelstärke (mm)',it:'Spessore pannello (mm)'}},
+     {k:'abmessung',l:{de:'Abmessung L×B×H (mm)',it:'Dimensioni L×L×A (mm)'}},
+     {k:'gewicht',l:{de:'Gewicht',it:'Peso'},t:'num',u:'kg'},
+     {k:'schutzart',l:{de:'Schutzart (IP)',it:'Grado protezione (IP)'}},
+     {k:'daemmung',l:{de:'Wärme-/Schalldämmung',it:'Isolamento termico/acustico'}},
+     {k:'wetter',l:{de:'Wetterschutzdach',it:'Tetto di protezione'},t:'sel',o:OPT_JN},
+     {k:'revtueren',l:{de:'Revisionstüren (Anzahl)',it:'Portelli ispezione (q.tà)'},t:'num'},
+     {k:'beleuchtung',l:{de:'Innenbeleuchtung',it:'Illuminazione interna'},t:'sel',o:OPT_JN},
+     {k:'schauglas',l:{de:'Schauglas',it:'Oblò'},t:'sel',o:OPT_JN},
+     {k:'diffdruck',l:{de:'Differenzdruck-Anzeige',it:'Indicatore press. diff.'},t:'sel',o:OPT_JN}
+   ]}
+ ]},
+
+ {id:'filter',tab:{de:'Filter',it:'Filtri'},type:'comp',items:[
+   {id:'filt-al',n:{de:'Filterstufe: Außenluft',it:'Stadio filtro: aria esterna'},f:filterF()},
+   {id:'filt-zl',n:{de:'Filterstufe: Zuluft',it:'Stadio filtro: mandata'},f:filterF()},
+   {id:'filt-ab',n:{de:'Filterstufe: Abluft',it:'Stadio filtro: ripresa'},f:filterF()},
+   {id:'filt-fl',n:{de:'Filterstufe: Fortluft',it:'Stadio filtro: espulsione'},f:filterF()}
+ ]},
+
+ {id:'vent',tab:{de:'Ventilatoren',it:'Ventilatori'},type:'comp',items:[
+   {id:'vent-zu',n:{de:'Zuluftventilator',it:'Ventilatore mandata'},f:ventF()},
+   {id:'vent-ab',n:{de:'Abluftventilator',it:'Ventilatore ripresa'},f:ventF()},
+   {id:'vent-fo',n:{de:'Fortluft-/Zusatzventilator',it:'Ventilatore espulsione/aux'},f:ventF()}
+ ]},
+
+ {id:'wk',tab:{de:'Wärme / Kälte',it:'Caldo / Freddo'},type:'comp',items:[
+   {id:'wk-heiz',n:{de:'Heizregister / Lufterhitzer',it:'Batteria riscaldamento'},f:[
+     {k:'medium',l:{de:'Medium',it:'Fluido'},t:'sel',o:O_HMED,w:'full'},
+     {k:'leistung',l:{de:'Leistung',it:'Potenza'},t:'num',u:'kW'},
+     {k:'vl',l:{de:'Vorlauf',it:'Mandata'},t:'num',u:'°C'},
+     {k:'rl',l:{de:'Rücklauf',it:'Ritorno'},t:'num',u:'°C'},
+     {k:'ventil',l:{de:'Regelventil (Fabrikat / Typ)',it:'Valvola regolazione (marca/tipo)'},w:'full'},
+     {k:'antrieb',l:{de:'Stellantrieb',it:'Servomotore'}},
+     {k:'pumpe',l:{de:'Umwälzpumpe (Fabrikat / Typ)',it:'Pompa (marca / tipo)'}},
+     {k:'frost',l:{de:'Frostschutzthermostat',it:'Termostato antigelo'},t:'sel',o:OPT_JN}
+   ]},
+   {id:'wk-kuehl',n:{de:'Kühlregister / Luftkühler',it:'Batteria raffreddamento'},f:[
+     {k:'medium',l:{de:'Medium',it:'Fluido'},t:'sel',o:O_KMED,w:'full'},
+     {k:'leistung',l:{de:'Leistung',it:'Potenza'},t:'num',u:'kW'},
+     {k:'vl',l:{de:'Vorlauf',it:'Mandata'},t:'num',u:'°C'},
+     {k:'rl',l:{de:'Rücklauf',it:'Ritorno'},t:'num',u:'°C'},
+     {k:'tropfen',l:{de:'Tropfenabscheider',it:'Separatore di gocce'},t:'sel',o:OPT_JN},
+     {k:'kondensat',l:{de:'Kondensatwanne / -ablauf',it:'Vasca / scarico condensa'},t:'sel',o:OPT_JN},
+     {k:'ventil',l:{de:'Regelventil (Fabrikat / Typ)',it:'Valvola regolazione (marca/tipo)'},w:'full'},
+     {k:'antrieb',l:{de:'Stellantrieb',it:'Servomotore'}},
+     {k:'pumpe',l:{de:'Pumpe (Fabrikat / Typ)',it:'Pompa (marca / tipo)'}}
+   ]},
+   {id:'wk-ne',n:{de:'Nacherhitzer',it:'Post-riscaldatore'},f:[
+     {k:'medium',l:{de:'Medium',it:'Fluido'},t:'sel',o:O_HMED,w:'full'},
+     {k:'leistung',l:{de:'Leistung',it:'Potenza'},t:'num',u:'kW'},
+     {k:'ventil',l:{de:'Regelventil (Fabrikat / Typ)',it:'Valvola regolazione (marca/tipo)'},w:'full'},
+     {k:'antrieb',l:{de:'Stellantrieb',it:'Servomotore'}},
+     {k:'pumpe',l:{de:'Pumpe (Fabrikat / Typ)',it:'Pompa (marca / tipo)'}}
+   ]},
+   {id:'wk-nk',n:{de:'Nachkühler',it:'Post-raffreddatore'},f:[
+     {k:'medium',l:{de:'Medium',it:'Fluido'},t:'sel',o:O_KMED,w:'full'},
+     {k:'leistung',l:{de:'Leistung',it:'Potenza'},t:'num',u:'kW'},
+     {k:'ventil',l:{de:'Regelventil (Fabrikat / Typ)',it:'Valvola regolazione (marca/tipo)'},w:'full'},
+     {k:'antrieb',l:{de:'Stellantrieb',it:'Servomotore'}}
+   ]}
+ ]},
+
+ {id:'wrg',tab:{de:'WRG',it:'RC'},type:'comp',items:[
+   {id:'wrg-main',n:{de:'Wärmerückgewinnung',it:'Recupero di calore'},f:[
+     {k:'bauart',l:{de:'Bauart',it:'Tipo'},t:'sel',o:O_WRG,w:'full'},
+     F_FAB,F_TYP,F_BJ,
+     {k:'rw',l:{de:'Rückwärmzahl / Wirkungsgrad',it:'Rendimento'},t:'num',u:'%'},
+     {k:'antrieb',l:{de:'Rotorantrieb (Fabrikat / Typ)',it:'Azionamento rotore (marca/tipo)'}},
+     {k:'bypass',l:{de:'Bypass vorhanden',it:'Bypass presente'},t:'sel',o:OPT_JN}
+   ]}
+ ]},
+
+ {id:'klappen',tab:{de:'Klappen',it:'Serrande'},type:'comp',items:[
+   {id:'kl-al',n:{de:'Außenluftklappe',it:'Serranda aria esterna'},f:klappeF()},
+   {id:'kl-fl',n:{de:'Fortluftklappe',it:'Serranda espulsione'},f:klappeF()},
+   {id:'kl-zl',n:{de:'Zuluftklappe',it:'Serranda mandata'},f:klappeF()},
+   {id:'kl-ab',n:{de:'Abluftklappe',it:'Serranda ripresa'},f:klappeF()},
+   {id:'kl-um',n:{de:'Umluftklappe',it:'Serranda ricircolo'},f:klappeF()},
+   {id:'kl-bp',n:{de:'Bypassklappe',it:'Serranda bypass'},f:klappeF()}
+ ]},
+
+ {id:'msr',tab:{de:'MSR / Elektro',it:'MSR / Elettrico'},type:'fields',groups:[
+   {t:{de:'Schaltschrank',it:'Quadro elettrico'},ic:'ti-server-2',f:[
+     {k:'fab',l:{de:'Fabrikat',it:'Marca'}},
+     {k:'standort',l:{de:'Standort / Aufstellort',it:'Ubicazione'}},
+     {k:'absicherung',l:{de:'Absicherung / Vorsicherung',it:'Protezione / prefusibile'}},
+     {k:'schutzart',l:{de:'Schutzart (IP)',it:'Grado protezione (IP)'}}
+   ],scope:'ss'},
+   {t:{de:'Regelung / GLT',it:'Regolazione / BMS'},ic:'ti-cpu',f:[
+     {k:'ddc',l:{de:'Regelgerät / DDC (Fabrikat / Typ)',it:'Regolatore / DDC (marca/tipo)'},w:'full'},
+     {k:'glt',l:{de:'GLT-Aufschaltung',it:'Collegamento BMS'},t:'sel',o:OPT_JN},
+     {k:'protokoll',l:{de:'Protokoll (BACnet / Modbus …)',it:'Protocollo (BACnet/Modbus…)'}}
+   ],scope:'reg'},
+   {t:{de:'Sensorik & Sicherheit',it:'Sensori e sicurezza'},ic:'ti-shield-check',f:[
+     {k:'sensoren',l:{de:'Sensorik (Temp / Feuchte / CO₂ / Druck)',it:'Sensori (temp/umid/CO₂/press)'},t:'area',w:'full'},
+     {k:'frost',l:{de:'Frostschutzwächter',it:'Sonda antigelo'},t:'sel',o:OPT_JN},
+     {k:'brandfall',l:{de:'Brandfallsteuerung',it:'Comando in caso d\u2019incendio'},t:'sel',o:OPT_JN},
+     {k:'krm',l:{de:'Kanalrauchmelder (Fabrikat / Anzahl)',it:'Rivelatore fumo canale (marca/q.tà)'},w:'full'}
+   ],scope:'sic'}
+ ]},
+
+ {id:'zubehoer',tab:{de:'Kanäle / Zubehör',it:'Canali / accessori'},type:'comp',items:[
+   {id:'zub-kanal',n:{de:'Luftkanäle / Netz',it:'Canali / rete aeraulica'},f:[
+     {k:'material',l:{de:'Material',it:'Materiale'},t:'sel',o:O_MAT},
+     {k:'daemmung',l:{de:'Dämmung',it:'Isolamento'}},
+     {k:'dicht',l:{de:'Dichtheitsklasse (ATC)',it:'Classe tenuta (ATC)'}}
+   ]},
+   {id:'zub-sd',n:{de:'Schalldämpfer',it:'Silenziatori'},f:[
+     {k:'bauart',l:{de:'Bauart (Kulisse / Rohr)',it:'Tipo (a setti / cilindrico)'}},
+     {k:'anz',l:{de:'Anzahl',it:'Quantità'},t:'num'}
+   ]},
+   {id:'zub-vsr',n:{de:'Volumenstromregler',it:'Regolatori di portata'},f:[F_FAB,F_TYP,{k:'anz',l:{de:'Anzahl',it:'Quantità'},t:'num'}]},
+   {id:'zub-bsk',n:{de:'Brandschutzklappen',it:'Serrande tagliafuoco'},f:[F_FAB,F_TYP,{k:'anz',l:{de:'Anzahl',it:'Quantità'},t:'num'},{k:'ausl',l:{de:'Auslösung (Thermo / Motor)',it:'Sgancio (termico/motore)'}}]},
+   {id:'zub-bef',n:{de:'Luftbefeuchter',it:'Umidificatore'},f:[{k:'bauart',l:{de:'Bauart (Dampf / adiabatisch)',it:'Tipo (vapore/adiabatico)'},w:'full'},F_FAB,F_TYP,{k:'leistung',l:{de:'Leistung',it:'Potenza'},t:'num',u:'kg/h'}]},
+   {id:'zub-ausl',n:{de:'Luftdurchlässe / Auslässe',it:'Diffusori / bocchette'},f:[{k:'bauart',l:{de:'Bauart',it:'Tipo'}},{k:'anz',l:{de:'Anzahl',it:'Quantità'},t:'num'}]},
+   {id:'zub-gitter',n:{de:'Wetterschutzgitter / Ansaugung',it:'Griglia esterna / presa aria'},f:[{k:'bauart',l:{de:'Bauart',it:'Tipo'}},{k:'abmessung',l:{de:'Abmessung (mm)',it:'Dimensioni (mm)'}}]}
+ ]},
+
+ {id:'notizen',tab:{de:'Fotos / Notizen',it:'Foto / note'},type:'fields',groups:[
+   {t:{de:'Allgemeine Bemerkungen',it:'Note generali'},ic:'ti-notes',pid:'uebersicht',f:[
+     {k:'text',l:{de:'Zustand, Auffälligkeiten, Zugänglichkeit …',it:'Stato, anomalie, accessibilità …'},t:'area',w:'full'}
+   ],scope:'notiz'},
+   {t:{de:'Empfehlung',it:'Raccomandazione'},ic:'ti-checklist',f:[
+     {k:'intervall',l:{de:'Empfohlenes Wartungsintervall',it:'Intervallo manutenzione consigliato'},t:'sel',o:O_INT,w:'full'},
+     {k:'massnahmen',l:{de:'Empfohlene Maßnahmen / nächste Schritte',it:'Interventi consigliati / passi successivi'},t:'area',w:'full'}
+   ],scope:'empf'}
+ ]},
+
+ {id:'sig',tab:{de:'Unterschrift',it:'Firma'},type:'sig'}
+];
+
+function filterF(){return[
+  {k:'art',l:{de:'Filterart',it:'Tipo filtro'},t:'sel',o:O_FILTART},
+  {k:'klasse',l:{de:'Filterklasse',it:'Classe filtro'},t:'selg',og:OG_FILT},
+  {k:'abmessung',l:{de:'Abmessung L×B×H (mm)',it:'Dimensioni L×L×A (mm)'}},
+  {k:'anz',l:{de:'Anzahl',it:'Quantità'},t:'num'},
+  {k:'rahmen',l:{de:'Rahmen / Material',it:'Telaio / materiale'}},
+  {k:'enddp',l:{de:'Enddruckverlust',it:'Perdita carico finale'},t:'num',u:'Pa'}
+];}
+function ventF(){return[
+  {k:'bauart',l:{de:'Bauart',it:'Tipo'},t:'sel',o:O_VBAU,w:'full'},
+  F_FAB,F_TYP,F_BJ,F_SN,
+  {k:'antrieb',l:{de:'Antrieb',it:'Trasmissione'},t:'sel',o:O_ANTR},
+  {k:'motorfab',l:{de:'Motor-Fabrikat',it:'Marca motore'}},
+  {k:'leistung',l:{de:'Motorleistung',it:'Potenza motore'},t:'num',u:'kW'},
+  {k:'strom',l:{de:'Nennstrom',it:'Corrente nominale'},t:'num',u:'A'},
+  {k:'spannung',l:{de:'Spannung',it:'Tensione'},u:'V'},
+  {k:'drehzahl',l:{de:'Drehzahl',it:'Numero di giri'},t:'num',u:'1/min'},
+  {k:'fu',l:{de:'Frequenzumrichter',it:'Inverter'},t:'sel',o:OPT_JN},
+  {k:'futyp',l:{de:'FU-Typ / Fabrikat',it:'Tipo/marca inverter'}},
+  {k:'keilriemen',l:{de:'Keilriementyp',it:'Tipo cinghia'}}
+];}
+function klappeF(){return[
+  {k:'bauart',l:{de:'Bauart',it:'Tipo'},t:'sel',o:O_KLBAU,w:'full'},
+  {k:'abmessung',l:{de:'Abmessung B×H (mm)',it:'Dimensioni L×A (mm)'}},
+  {k:'antrieb',l:{de:'Stellantrieb Fabrikat / Typ',it:'Servomotore marca / tipo'}},
+  {k:'funktion',l:{de:'Funktion',it:'Funzione'},t:'sel',o:O_STELL}
+];}
+
+/* ============ state ============ */
+let cur=0, present={}, photos={}, sigData=null, anlagenfotoData=null;
+const compIndex={};   // compId -> {sec, comp}
+SECTIONS.forEach(s=>{ if(s.type==='comp') s.items.forEach(c=>compIndex[c.id]={sec:s,comp:c}); });
+
+/* ============ rendering ============ */
+function fieldId(scope,k){return scope+'__'+k;}
+function optionsHtml(f,curV){
+  let h='<option value="">'+(f.t==='sel'||f.t==='selg'?U('waehlen'):'')+'</option>';
+  if(f.t==='selg'){
+    (f.og||[]).forEach(g=>{h+='<optgroup label="'+g.l+'">'+g.o.map(o=>'<option>'+o+'</option>').join('')+'</optgroup>';});
+  }else{
+    (f.o||[]).forEach(o=>{const val=(o&&typeof o==='object')?o.de:o;h+='<option value="'+esc(val)+'">'+esc(L(o))+'</option>';});
+  }
+  return h;
+}
+function fieldHtml(scope,f){
+  const id=fieldId(scope,f.k);
+  const cls='ff'+(f.w==='full'?' full':'');
+  let ctrl;
+  if(f.t==='sel'||f.t==='selg'){
+    ctrl='<select id="'+id+'" data-fid="'+id+'">'+optionsHtml(f)+'</select>';
+  }else if(f.t==='area'){
+    ctrl='<textarea id="'+id+'" data-fid="'+id+'" placeholder=""></textarea>';
+  }else{
+    const inp='<input id="'+id+'" data-fid="'+id+'" '+(f.t==='num'?'inputmode="decimal"':'')+' placeholder="">';
+    ctrl=f.u?('<div class="unitwrap">'+inp+'<span>'+f.u+'</span></div>'):inp;
+  }
+  return '<div class="'+cls+'"><label for="'+id+'">'+esc(L(f.l))+'</label>'+ctrl+'</div>';
+}
+function photoBar(pid){
+  return '<div class="photo-bar"><div class="photo-thumbs" id="photos-'+pid+'"></div>'+
+    '<label class="photo-add-btn"><input type="file" accept="image/*" onchange="handlePhoto(this,\''+pid+'\')"><i class="ti ti-camera"></i><span>'+U('foto')+'</span></label></div>';
+}
+function groupCard(g){
+  const scope=g.scope;
+  let h='<div class="card"><div class="sec-hdr"><i class="ti '+(g.ic||'ti-file')+'"></i><span class="sec-title">'+esc(L(g.t))+'</span></div>';
+  h+='<div class="comp-body"><div class="fgrid">';
+  g.f.forEach(f=>{h+=fieldHtml(scope,f);});
+  h+='</div>';
+  if(g.pid)h+=photoBar(g.pid);
+  h+='</div></div>';
+  return h;
+}
+function compCard(c){
+  let h='<div class="card"><div class="sec-hdr"><i class="ti ti-adjustments"></i><span class="sec-title">'+esc(L(c.n))+'</span>'+
+    '<div class="present-toggle"><button class="pt-btn" id="ptj-'+c.id+'" onclick="setPresent(\''+c.id+'\',\'ja\')">'+U('ja')+'</button>'+
+    '<button class="pt-btn" id="ptn-'+c.id+'" onclick="setPresent(\''+c.id+'\',\'nein\')">'+U('nein')+'</button></div></div>';
+  h+='<div class="comp-absent" id="absent-'+c.id+'">'+U('nichtVorh')+'</div>';
+  h+='<div class="comp-body" id="body-'+c.id+'"><div class="fgrid">';
+  c.f.forEach(f=>{h+=fieldHtml(c.id,f);});
+  h+=fieldHtml(c.id,{k:'bem',l:UI.bem,t:'area',w:'full'});
+  h+='</div>'+photoBar(c.id)+'</div></div>';
+  return h;
+}
+function startCard(){
+  return '<div class="content" id="tab-start">'+
+    '<div class="card"><div class="sec-hdr"><i class="ti ti-building-factory"></i><span class="sec-title">Air for All GmbH</span></div>'+
+      '<div style="background:#002060;padding:18px 20px"><img src="'+LOGO_DATA+'" style="height:64px;max-width:260px;object-fit:contain" alt="Air for All"></div>'+
+      '<div style="padding:12px 14px"><div style="font-size:14px;font-weight:600;color:var(--tx)">Air for All GmbH</div>'+
+      '<div style="font-size:12px;color:var(--tx2);margin-top:4px;line-height:1.7">Benzstr. 1 · 70839 Gerlingen<br>Tel. 07156 17809-287<br>info.airforall@apleona.com</div></div></div>'+
+    '<div class="card"><div class="sec-hdr"><i class="ti ti-template"></i><span class="sec-title" data-uk="presetTitle">Anlagentyp – Schnellauswahl</span></div>'+
+      '<div class="comp-body"><div class="hint" data-uk="presetHint">Setzt sinnvolle „vorhanden / nicht vorhanden“-Vorgaben. Alles bleibt anpassbar.</div>'+
+      '<div class="preset-row">'+
+        '<button class="preset-btn" onclick="applyPreset(\'rlt\')"><i class="ti ti-building"></i><span data-uk="pRlt">Zentrale RLT-Anlage</span></button>'+
+        '<button class="preset-btn" onclick="applyPreset(\'zuab\')"><i class="ti ti-arrows-exchange"></i><span data-uk="pZuab">Zu-/Abluftgerät</span></button>'+
+        '<button class="preset-btn" onclick="applyPreset(\'abl\')"><i class="ti ti-wind"></i><span data-uk="pAbl">Ablüfter</span></button>'+
+        '<button class="preset-btn" onclick="applyPreset(\'clear\')"><i class="ti ti-eraser"></i><span data-uk="pClear">Zurücksetzen</span></button>'+
+      '</div></div></div>'+
+    '<div class="card"><div class="sec-hdr"><i class="ti ti-database"></i><span class="sec-title" data-uk="dataTitle">Aufnahme sichern / laden</span></div>'+
+      '<div class="comp-body" style="display:flex;flex-direction:column;gap:10px">'+
+        '<div class="hint" data-uk="dataHint">Speichert die komplette Aufnahme inkl. Fotos als JSON-Datei zur Wiederverwendung.</div>'+
+        '<button class="act-btn" style="background:var(--brand);color:#fff" onclick="saveJson()" data-uk="btnSave">💾 Aufnahme speichern (JSON)</button>'+
+        '<label class="act-btn" style="background:var(--bg2);color:var(--tx);border:.5px solid var(--bdr)"><span data-uk="btnLoad">📂 Aufnahme laden …</span><input type="file" accept=".json" style="display:none" onchange="loadJson(this)"></label>'+
+        '<button class="act-btn" style="background:var(--rdl);color:#A32D2D;border:.5px solid #F09595" onclick="resetAll()" data-uk="btnReset">🗑 Neue leere Aufnahme</button>'+
+        '<div class="tpl-status" id="tplStatus"></div>'+
+      '</div></div>'+
+    '</div>';
+}
+function sigCard(){
+  return '<div class="content hidden" id="tab-sig">'+
+    '<div class="card"><div class="sec-hdr"><i class="ti ti-signature"></i><span class="sec-title" data-uk="sigHdr">Unterschrift Aufnehmer</span></div>'+
+      '<div class="sig-wrap"><div class="sig-lrow"><span class="sig-name" id="sig-name">'+U('sigTitle')+'</span>'+
+        '<div style="display:flex;gap:6px"><button class="sig-btn" onclick="clearSig()" data-uk="sigClear">✕ Löschen</button></div></div>'+
+        '<canvas id="sig-canvas" class="sig-canvas" width="700" height="130"></canvas>'+
+        '<div class="sig-hint" id="sig-hint" data-uk="sigHint">Mit Finger oder Apple Pencil unterschreiben</div></div></div>'+
+    '<div class="card"><div style="padding:11px 14px;display:flex;align-items:flex-start;gap:9px">'+
+      '<i class="ti ti-info-circle" style="font-size:15px;color:var(--blue);margin-top:1px"></i>'+
+      '<p style="font-size:12px;color:var(--tx2);line-height:1.5" data-uk="sigInfo">PDF-Button → Drucken → Als PDF sichern. Über „Aufnahme speichern“ bleibt die Erfassung als Datei erhalten.</p></div></div>'+
+    '</div>';
+}
+function buildForm(){
+  const tb=document.getElementById('tabbar');tb.innerHTML='';
+  SECTIONS.forEach((s,i)=>{const d=document.createElement('div');d.className='tab'+(i===cur?' active':'');d.textContent=L(s.tab);d.onclick=()=>showTab(i);tb.appendChild(d);});
+  const form=document.getElementById('form');let html='';
+  SECTIONS.forEach((s,i)=>{
+    if(s.type==='start'){html+=startCard();return;}
+    if(s.type==='sig'){html+=sigCard();return;}
+    let inner='';
+    if(s.type==='fields'){s.groups.forEach(g=>{inner+=groupCard(g);});}
+    else if(s.type==='comp'){s.items.forEach(c=>{inner+=compCard(c);});}
+    html+='<div class="content'+(i===cur?'':' hidden')+'" id="tab-'+s.id+'">'+inner+'</div>';
+  });
+  form.innerHTML=html;
+  applyUIText();
+  form.querySelectorAll('.content').forEach((c,i)=>{if(i!==cur)c.classList.add('hidden');});
+  // re-apply present states
+  Object.keys(present).forEach(id=>applyPresentUI(id,present[id]));
+  renderAllPhotos();
+  initSig();
+  updateProgress();
+}
+function applyUIText(){
+  document.getElementById('tb-title').textContent=U('title');
+  document.getElementById('tb-sub').textContent=U('sub');
+  document.getElementById('pv-title').textContent=U('pdfPrev');
+  document.getElementById('pv-sub').textContent=U('pdfSub');
+  document.getElementById('pv-print').textContent=U('print');
+  document.getElementById('picker-title').textContent=U('pickTitle');
+  const map={presetTitle:{de:'Anlagentyp – Schnellauswahl',it:'Tipo impianto – selezione rapida'},
+    presetHint:{de:'Setzt sinnvolle „vorhanden / nicht vorhanden“-Vorgaben. Alles bleibt anpassbar.',it:'Imposta valori „presente/non presente“ sensati. Tutto resta modificabile.'},
+    pRlt:{de:'Zentrale RLT-Anlage',it:'Impianto VMC centrale'},pZuab:{de:'Zu-/Abluftgerät',it:'Gruppo mandata/ripresa'},pAbl:{de:'Ablüfter',it:'Estrattore'},pClear:{de:'Zurücksetzen',it:'Azzera'},
+    dataTitle:{de:'Aufnahme sichern / laden',it:'Salva / carica rilevamento'},
+    dataHint:{de:'Speichert die komplette Aufnahme inkl. Fotos als JSON-Datei zur Wiederverwendung.',it:'Salva l\u2019intero rilevamento con foto come file JSON riutilizzabile.'},
+    btnSave:{de:'💾 Aufnahme speichern (JSON)',it:'💾 Salva rilevamento (JSON)'},btnLoad:{de:'📂 Aufnahme laden …',it:'📂 Carica rilevamento …'},btnReset:{de:'🗑 Neue leere Aufnahme',it:'🗑 Nuovo rilevamento vuoto'},
+    sigHdr:{de:'Unterschrift Aufnehmer',it:'Firma rilevatore'},sigClear:{de:'✕ Löschen',it:'✕ Cancella'},
+    sigHint:{de:'Mit Finger oder Apple Pencil unterschreiben',it:'Firmare con dito o Apple Pencil'},
+    sigInfo:{de:'PDF-Button → Drucken → Als PDF sichern. Über „Aufnahme speichern“ bleibt die Erfassung als Datei erhalten.',it:'Pulsante PDF → Stampa → Salva come PDF. Con „Salva rilevamento“ i dati restano in un file.'}};
+  document.querySelectorAll('[data-uk]').forEach(el=>{const k=el.getAttribute('data-uk');if(map[k])el.textContent=L(map[k]);});
+  document.getElementById('next-btn').textContent=cur===SECTIONS.length-1?U('pdfCreate'):U('weiter');
+}
+
+/* ============ nav ============ */
+function showTab(i){
+  cur=i;
+  document.querySelectorAll('#form .content').forEach(c=>c.classList.add('hidden'));
+  const el=document.getElementById('tab-'+SECTIONS[i].id);if(el)el.classList.remove('hidden');
+  document.querySelectorAll('#tabbar .tab').forEach((t,ti)=>t.classList.toggle('active',ti===i));
+  document.getElementById('next-btn').textContent=i===SECTIONS.length-1?U('pdfCreate'):U('weiter');
+  updateProgress();
+  document.querySelector('.scroll').scrollTop=0;
+}
+function updateProgress(){document.getElementById('pfill').style.width=((cur+1)/SECTIONS.length*100)+'%';}
+function nextTab(){if(cur<SECTIONS.length-1)showTab(cur+1);else showPdf();}
+function prevTab(){if(cur>0)showTab(cur-1);}
+
+/* ============ present toggle ============ */
+function setPresent(id,val){
+  present[id]=present[id]===val?null:val;
+  applyPresentUI(id,present[id]);
+  persist();autosaveToast();
+}
+function applyPresentUI(id,val){
+  const j=document.getElementById('ptj-'+id),n=document.getElementById('ptn-'+id);
+  const body=document.getElementById('body-'+id),abs=document.getElementById('absent-'+id);
+  if(j)j.classList.toggle('on-ja',val==='ja');
+  if(n)n.classList.toggle('on-nein',val==='nein');
+  if(body)body.classList.toggle('off',val==='nein');
+  if(abs)abs.classList.toggle('vis',val==='nein');
+}
+
+/* ============ presets ============ */
+const PRESETS={
+  rlt:{ja:['filt-al','filt-zl','vent-zu','vent-ab','wk-heiz','wrg-main','kl-al','kl-fl','kl-zl','kl-ab'],nein:['wk-nk']},
+  zuab:{ja:['filt-al','vent-zu','vent-ab','wk-heiz','wrg-main'],nein:['wk-ne','wk-nk','kl-um']},
+  abl:{ja:['vent-ab'],nein:['filt-al','filt-zl','filt-fl','vent-zu','vent-fo','wk-heiz','wk-kuehl','wk-ne','wk-nk','wrg-main','kl-al','kl-zl','kl-bp','kl-um','zub-bef']}
+};
+function applyPreset(name){
+  if(name==='clear'){present={};buildForm();showTab(0);showTplStatus(lang==='it'?'Preselezioni azzerate.':'Vorauswahl zurückgesetzt.');persist();return;}
+  const p=PRESETS[name];if(!p)return;
+  (p.ja||[]).forEach(id=>{if(compIndex[id])present[id]='ja';});
+  (p.nein||[]).forEach(id=>{if(compIndex[id])present[id]='nein';});
+  Object.keys(present).forEach(id=>applyPresentUI(id,present[id]));
+  // preset the Anlagenart field
+  const artMap={rlt:'Zentrale RLT-Anlage',zuab:'Zu-/Abluftgerät',abl:'Ablüfter / Abluftventilator'};
+  const artEl=document.getElementById('stamm__art');
+  if(artEl&&artMap[name])artEl.value=artMap[name];
+  showTplStatus(lang==='it'?'Preselezione applicata – controllare i campi.':'Vorauswahl gesetzt – bitte Felder prüfen.');
+  persist();autosaveToast();showTab(1);
+}
+
+/* ============ photos ============ */
+function handlePhoto(input,key){
+  if(!input.files||!input.files[0])return;
+  const reader=new FileReader();
+  reader.onload=e=>{const img=new Image();img.onload=()=>{
+    const MAX=900;let w=img.width,h=img.height;
+    if(w>h&&w>MAX){h=Math.round(h*MAX/w);w=MAX;}else if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
+    const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);
+    const data=c.toDataURL('image/jpeg',.72);
+    if(!photos[key])photos[key]=[];photos[key].push(data);renderPhotos(key);persist();autosaveToast();
+  };img.src=e.target.result;};
+  reader.readAsDataURL(input.files[0]);input.value='';
+}
+function renderPhotos(key){
+  const area=document.getElementById('photos-'+key);if(!area)return;area.innerHTML='';
+  (photos[key]||[]).forEach((src,i)=>{
+    const w=document.createElement('div');w.className='pthumb-wrap';
+    const im=document.createElement('img');im.className='pthumb';im.src=src;im.onclick=()=>openLightbox(key,i);
+    const d=document.createElement('button');d.className='pdel';d.textContent='✕';
+    d.onclick=()=>{photos[key].splice(i,1);renderPhotos(key);persist();autosaveToast();};
+    w.appendChild(im);w.appendChild(d);area.appendChild(w);
+  });
+}
+function renderAllPhotos(){Object.keys(photos).forEach(k=>renderPhotos(k));}
+function openLightbox(key,idx){
+  const src=(photos[key]||[])[idx];if(!src)return;
+  const lb=document.createElement('div');lb.className='lightbox';
+  const im=document.createElement('img');im.src=src;
+  const btn=document.createElement('button');btn.className='lightbox-close';btn.textContent='✕';
+  btn.onclick=()=>lb.remove();lb.appendChild(im);lb.appendChild(btn);
+  lb.onclick=e=>{if(e.target===lb)lb.remove();};document.body.appendChild(lb);
+}
+
+/* ============ signature ============ */
+let _sigInit=false;
+function initSig(){
+  const c=document.getElementById('sig-canvas');if(!c)return;
+  const ctx=c.getContext('2d');let drawing=false,lx=0,ly=0;
+  function pos(e){const r=c.getBoundingClientRect(),sx=c.width/r.width,sy=c.height/r.height;return e.touches?{x:(e.touches[0].clientX-r.left)*sx,y:(e.touches[0].clientY-r.top)*sy}:{x:(e.clientX-r.left)*sx,y:(e.clientY-r.top)*sy};}
+  function start(e){e.preventDefault();drawing=true;const p=pos(e);lx=p.x;ly=p.y;ctx.beginPath();ctx.arc(lx,ly,1.5,0,Math.PI*2);ctx.fillStyle='#1a1a1a';ctx.fill();}
+  function move(e){e.preventDefault();if(!drawing)return;const p=pos(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.strokeStyle='#1a1a1a';ctx.lineWidth=2.5;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();lx=p.x;ly=p.y;}
+  function end(e){e.preventDefault();if(!drawing)return;drawing=false;sigData=c.toDataURL('image/png');c.classList.add('signed');document.getElementById('sig-hint').textContent=lang==='it'?'✓ Salvato':'✓ Gespeichert';persist();}
+  c.onmousedown=start;c.onmousemove=move;c.onmouseup=end;c.onmouseleave=end;
+  c.ontouchstart=start;c.ontouchmove=move;c.ontouchend=end;
+  if(sigData){const im=new Image();im.onload=()=>{ctx.clearRect(0,0,c.width,c.height);ctx.drawImage(im,0,0,c.width,c.height);c.classList.add('signed');};im.src=sigData;document.getElementById('sig-hint').textContent=lang==='it'?'✓ Salvato':'✓ Gespeichert';}
+  updateSigName();
+}
+function clearSig(){const c=document.getElementById('sig-canvas');if(!c)return;c.getContext('2d').clearRect(0,0,c.width,c.height);c.classList.remove('signed');sigData=null;document.getElementById('sig-hint').textContent=lang==='it'?'Firmare con dito o Apple Pencil':'Mit Finger oder Apple Pencil unterschreiben';persist();}
+function updateSigName(){const el=document.getElementById('sig-name');if(!el)return;const t=gv('stamm__aufnahme').trim();el.textContent=t?U('sigTitle')+': '+t:U('sigTitle');}
+
+/* ============ helpers ============ */
+function gv(id){const el=document.getElementById(id);return el?(el.value||''):'';}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+let _st;
+function autosaveToast(){clearTimeout(_st);_st=setTimeout(()=>{const t=document.getElementById('toast');t.textContent=U('saved');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1100);},350);}
+function showTplStatus(msg){const el=document.getElementById('tplStatus');if(!el)return;el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',5000);}
+
+/* ============ collect / restore ============ */
+function collectValues(){const v={};document.querySelectorAll('#form [data-fid]').forEach(el=>{if(el.value)v[el.getAttribute('data-fid')]=el.value;});return v;}
+function restoreValues(v){if(!v)return;Object.keys(v).forEach(id=>{const el=document.getElementById(id);if(el)el.value=v[id];});}
+
+/* ============ persistence (light, text only) ============ */
+function persist(){try{const st={lang,vals:collectValues(),present};localStorage.setItem('rlt-aufnahme',JSON.stringify(st));}catch(e){}}
+function restore(){try{const raw=localStorage.getItem('rlt-aufnahme');if(!raw)return;const st=JSON.parse(raw);if(st.present)present=st.present;if(st.vals){restoreValues(st.vals);}if(st.lang&&st.lang!=='de'){lang=st.lang;}}catch(e){}}
+
+/* ============ JSON save / load (full, incl. photos) ============ */
+function saveJson(){
+  const d={_t:'RLT-Datenaufnahme',_v:1,lang,vals:collectValues(),present,photos,anlagenfoto:anlagenfotoData,sig:sigData};
+  const nr=(gv('stamm__bez')||gv('stamm__hersteller')||'Anlage').replace(/[^a-zA-Z0-9_-]/g,'_');
+  const blob=new Blob([JSON.stringify(d)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Datenaufnahme_'+nr+'.json';a.click();URL.revokeObjectURL(a.href);
+  showTplStatus(lang==='it'?'✓ Rilevamento salvato.':'✓ Aufnahme gespeichert.');
+}
+function loadJson(input){
+  if(!input.files||!input.files[0])return;
+  const reader=new FileReader();
+  reader.onload=e=>{try{
+    const d=JSON.parse(e.target.result);
+    if(d._t!=='RLT-Datenaufnahme')throw new Error(lang==='it'?'File non valido':'Falsche Datei');
+    present=d.present||{};photos=d.photos||{};sigData=d.sig||null;
+    if(d.lang)lang=d.lang;
+    buildForm();
+    restoreValues(d.vals);
+    renderAllPhotos();initSig();
+    document.getElementById('lang-de').classList.toggle('lang-active',lang==='de');
+    document.getElementById('lang-it').classList.toggle('lang-active',lang==='it');
+    persist();showTab(1);
+    showTplStatus(lang==='it'?'✓ Rilevamento caricato.':'✓ Aufnahme geladen.');
+  }catch(err){alert('Fehler: '+err.message);}};
+  reader.readAsText(input.files[0]);input.value='';
+}
+function resetAll(){
+  if(!confirm(lang==='it'?'Nuovo rilevamento vuoto? I dati non salvati vanno persi.':'Neue leere Aufnahme? Nicht gespeicherte Daten gehen verloren.'))return;
+  present={};photos={};sigData=null;anlagenfotoData=null;
+  try{localStorage.removeItem('rlt-aufnahme');}catch(e){}
+  buildForm();
+  const nd=new Date();const df=document.getElementById('stamm__datum');if(df)df.value=nd.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});
+  showTab(0);
+}
+
+/* ============ language ============ */
+function setLang(l){
+  if(l===lang)return;
+  const v=collectValues();
+  lang=l;
+  document.getElementById('lang-de').classList.toggle('lang-active',l==='de');
+  document.getElementById('lang-it').classList.toggle('lang-active',l==='it');
+  buildForm();
+  restoreValues(v);
+  renderAllPhotos();initSig();
+  persist();
+}
+
+/* ============ PDF ============ */
+function fldLabelValuePairs(scope,fields){
+  const out=[];
+  fields.forEach(f=>{const val=gv(fieldId(scope,f.k));if(val){out.push([L(f.l),val+(f.u?' '+f.u:'')]);} });
+  return out;
+}
+function kvTable(pairs){
+  if(!pairs.length)return'';
+  return '<table class="ptbl"><tbody>'+pairs.map(p=>'<tr><td class="k">'+esc(p[0])+'</td><td>'+esc(p[1])+'</td></tr>').join('')+'</tbody></table>';
+}
+function compPhotosHtml(id){const pl=photos[id]||[];return pl.length?'<div style="display:flex;flex-wrap:wrap;gap:3px;margin:2px 0 6px">'+pl.map(s=>'<img src="'+s+'" style="width:66px;height:66px;object-fit:cover;border-radius:3px">').join('')+'</div>':'';}
+
+function buildPdfBody(){
+  const artFull=gv('stamm__art');
+  const bezV=gv('stamm__bez');
+  const ag=[gv('stamm__ag__name'),gv('stamm__ag__street'),gv('stamm__ag__city'),gv('stamm__ag__kontakt')].filter(Boolean).join('<br>')||'—';
+  const obj=[gv('stamm__obj__name'),gv('stamm__obj__street'),gv('stamm__obj__city'),gv('stamm__standort')?L({de:'Standort: ',it:'Ubicazione: '})+gv('stamm__standort'):''].filter(Boolean).join('<br>')||'—';
+  const metaBoxes=[
+    [L({de:'Anlagenart',it:'Tipo impianto'}),artFull||'—'],
+    [L({de:'Anlagen-Nr.',it:'N. impianto'}),bezV||'—'],
+    [L({de:'Hersteller',it:'Produttore'}),gv('stamm__hersteller')||'—'],
+    [L({de:'Gerätetyp',it:'Tipo app.'}),gv('stamm__typ')||'—'],
+    [L({de:'Baujahr',it:'Anno'}),gv('stamm__baujahr')||'—'],
+    [L({de:'Serien-Nr.',it:'N. serie'}),gv('stamm__sn')||'—'],
+    [L({de:'Zuluft',it:'Mandata'}),gv('stamm__zuluft')?gv('stamm__zuluft')+' m³/h':'—'],
+    [L({de:'Abluft',it:'Ripresa'}),gv('stamm__abluft')?gv('stamm__abluft')+' m³/h':'—'],
+    [L({de:'Datum',it:'Data'}),gv('stamm__datum')||'—']
+  ];
+  let body='';
+  // parties + optional photo
+  const af=(photos['anlage']&&photos['anlage'][0])?photos['anlage'][0]:null;
+  if(af){
+    body+='<div style="display:flex;gap:8px;margin-bottom:7px;align-items:stretch"><img src="'+af+'" style="width:90px;height:90px;object-fit:cover;border-radius:4px;border:.5px solid #ddd;flex-shrink:0">'+
+      '<div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:5px"><div class="pparty"><div class="pparty-title">'+U('auftraggeber')+'</div><div class="pparty-val">'+ag+'</div></div>'+
+      '<div class="pparty"><div class="pparty-title">'+U('objekt')+'</div><div class="pparty-val">'+obj+'</div></div></div></div>';
+  }else{
+    body+='<div class="pparties"><div class="pparty"><div class="pparty-title">'+U('auftraggeber')+'</div><div class="pparty-val">'+ag+'</div></div>'+
+      '<div class="pparty"><div class="pparty-title">'+U('objekt')+'</div><div class="pparty-val">'+obj+'</div></div></div>';
+  }
+  body+='<div class="pmeta">'+metaBoxes.map(b=>'<div class="pbox"><div class="pbox-k">'+esc(b[0])+'</div><div class="pbox-v">'+esc(b[1])+'</div></div>').join('')+'</div>';
+
+  // remaining stamm fields not in meta boxes
+  const stammExtra=[];
+  [['stamm__aufstellung',{de:'Aufstellung',it:'Installazione'}],['stamm__pressung',{de:'Externe Pressung',it:'Prevalenza esterna'},'Pa'],['stamm__betrieb',{de:'Betriebsweise',it:'Modo funz.'}],['stamm__nutzung',{de:'Nutzung',it:'Uso'}],['stamm__aufnahme',{de:'Aufgenommen durch',it:'Rilevato da'}]].forEach(x=>{const v=gv(x[0]);if(v)stammExtra.push([L(x[1]),v+(x[2]?' '+x[2]:'')]);});
+  if(stammExtra.length)body+='<div class="psec">'+L({de:'Weitere Anlagendaten',it:'Ulteriori dati impianto'})+'</div>'+kvTable(stammExtra);
+
+  SECTIONS.forEach(s=>{
+    if(s.type==='fields'&&s.id!=='stamm'){
+      let secHtml='';
+      s.groups.forEach(g=>{
+        const pairs=fldLabelValuePairs(g.scope,g.f);
+        const ph=g.pid?compPhotosHtml(g.pid):'';
+        if(pairs.length||ph){secHtml+='<div class="pcomp">'+esc(L(g.t))+'</div>'+kvTable(pairs)+ph;}
+      });
+      if(secHtml)body+='<div class="psec">'+esc(L(s.tab))+'</div>'+secHtml;
+    }
+    if(s.type==='comp'){
+      let secHtml='';
+      s.items.forEach(c=>{
+        const st=present[c.id];
+        const fieldsForData=c.f.concat([{k:'bem',l:UI.bem,t:'area',w:'full'}]);
+        const pairs=fldLabelValuePairs(c.id,fieldsForData);
+        const ph=compPhotosHtml(c.id);
+        const hasData=pairs.length||ph;
+        if(st==='nein'&&!hasData){secHtml+='<div class="pcomp">'+esc(L(c.n))+' <span class="pchip nein">'+U('nichtVorh')+'</span></div>';return;}
+        if(st==='ja'||hasData){
+          secHtml+='<div class="pcomp">'+esc(L(c.n))+(st==='ja'?' <span class="pchip ja">'+U('vorhanden')+'</span>':'')+'</div>'+kvTable(pairs)+ph;
+        }
+      });
+      if(secHtml)body+='<div class="psec">'+esc(L(s.tab))+'</div>'+secHtml;
+    }
+  });
+
+  // recommendation / notes already covered by notizen (fields) loop above
+  // signature
+  const signer=gv('stamm__aufnahme');
+  body+='<div class="psec">'+L({de:'Unterschrift',it:'Firma'})+'</div><div style="border:.5px solid #ddd;border-radius:4px;padding:8px;margin-top:4px"><div style="font-size:9px;color:#999;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px">'+(signer?U('sigTitle')+': '+esc(signer):U('sigTitle'))+'</div>'+
+    (sigData?'<img src="'+sigData+'" style="width:100%;height:60px;object-fit:contain">':'<div style="height:60px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#ccc">'+U('keineUnt')+'</div>')+'</div>';
+  return body;
+}
+function showPdf(){
+  const datum=gv('stamm__datum');
+  const head='<div class="pco-hdr"><img class="pco-logo" src="'+LOGO_DATA+'" alt="Logo"><div class="pco-right"><div class="pdoc-title">'+U('docTitle')+'</div><div class="pnorm">'+L({de:'Bestandserfassung',it:'Rilevamento'})+' · '+(datum||'')+'</div><div class="pco-info">Benzstr. 1 · 70839 Gerlingen<br>Tel. 07156 17809-287 · info.airforall@apleona.com</div></div></div>';
+  const foot='<div class="pfoot"><span>Air for All GmbH · '+U('docTitle')+'</span><span>'+U('erstellt')+': '+new Date().toLocaleDateString(lang==='it'?'it-IT':'de-DE',{day:'2-digit',month:'2-digit',year:'numeric'})+'</span></div>';
+  document.getElementById('pdoc').innerHTML=head+'<div class="pbody">'+buildPdfBody()+foot+'</div>';
+  document.getElementById('pov').classList.remove('hidden');
+}
+function closePdf(){document.getElementById('pov').classList.add('hidden');}
+function doPrint(){
+  showPdf();
+  const nr=(gv('stamm__bez')||'').replace(/[^a-zA-Z0-9_-]/g,'-');
+  const dRaw=gv('stamm__datum')||'';const dp=dRaw.split('.');
+  const dKurz=dp.length===3?dp[0]+'-'+dp[1]+'-'+dp[2].slice(-2):dRaw.replace(/[.]/g,'');
+  const docName=['Datenaufnahme',nr,dKurz].filter(Boolean).join('_');
+  const c=document.getElementById('pdoc').innerHTML;
+  const w=window.open('','_blank');
+  if(!w){alert(lang==='it'?'Consentire i popup per questa pagina.':'Bitte Popups für diese Seite erlauben.');return;}
+  const css='*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:9px;color:#222;line-height:1.35}'+
+    '.pco-hdr{display:flex;justify-content:space-between;align-items:center;background:#002060;padding:8px 12px;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+    '.pco-logo{height:44px;max-width:180px;object-fit:contain}.pco-right{text-align:right}.pdoc-title{font-size:12px;font-weight:700;color:#fff;margin-bottom:1px}.pnorm{font-size:8px;color:rgba(255,255,255,.75)}.pco-info{font-size:8px;color:rgba(255,255,255,.85);line-height:1.5;margin-top:2px}'+
+    '.pbody{padding:8px 12px}.pparties{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:7px}.pparty{background:#f5f5f5;border-radius:3px;padding:4px 6px}.pparty-title{font-size:7px;color:#999;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}.pparty-val{font-size:10px;font-weight:700;color:#000;line-height:1.4}'+
+    '.pmeta{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:7px}.pbox{background:#f5f5f5;border-radius:3px;padding:4px 6px}.pbox-k{font-size:7px;color:#999;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1px}.pbox-v{font-size:9px;font-weight:600}'+
+    '.psec{font-size:8px;font-weight:700;color:#002060;text-transform:uppercase;letter-spacing:.06em;margin:8px 0 3px;border-bottom:.5px solid #ccc;padding-bottom:2px}'+
+    '.pcomp{font-size:9px;font-weight:700;color:#111;margin:6px 0 2px}.pchip{display:inline-block;padding:1px 6px;border-radius:8px;font-size:7px;font-weight:700}.pchip.ja{background:#E6EAF3;color:#002060}.pchip.nein{background:#f0f0f0;color:#999}'+
+    '.ptbl{width:100%;border-collapse:collapse;font-size:8px;margin-bottom:3px}.ptbl td{padding:2px 5px;border-bottom:.5px solid #eee;vertical-align:top}.ptbl td.k{width:38%;color:#555;font-weight:600}'+
+    '.pfoot{margin-top:8px;border-top:.5px solid #eee;padding-top:4px;font-size:7px;color:#bbb;display:flex;justify-content:space-between}'+
+    '@media print{@page{margin:8mm;size:A4}}';
+  w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>'+docName+'</title><style>'+css+'</style></head><body>'+c+'</body></html>');
+  w.document.close();
+  setTimeout(()=>{w.focus();w.print();},500);
+}
+
+/* ============ init ============ */
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+window.addEventListener('load',()=>{
+  document.getElementById('splash-logo').src=LOGO_DATA;
+  restore();
+  buildForm();
+  // restore text values after build (restore() set present + lang; values need form built)
+  try{const raw=localStorage.getItem('rlt-aufnahme');if(raw){const st=JSON.parse(raw);if(st.vals)restoreValues(st.vals);}}catch(e){}
+  document.getElementById('lang-de').classList.toggle('lang-active',lang==='de');
+  document.getElementById('lang-it').classList.toggle('lang-active',lang==='it');
+  const df=document.getElementById('stamm__datum');if(df&&!df.value){df.value=new Date().toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});}
+  // delegated autosave
+  document.getElementById('form').addEventListener('input',e=>{if(e.target.matches('[data-fid]')){persist();autosaveToast();if(e.target.id==='stamm__aufnahme')updateSigName();}});
+  document.getElementById('form').addEventListener('change',e=>{if(e.target.matches('[data-fid]')){persist();autosaveToast();}});
+  const s=document.getElementById('splash');if(s)setTimeout(()=>{s.style.opacity='0';setTimeout(()=>s.remove(),500);},700);
+});
+
+</script>
+</body>
+</html>
